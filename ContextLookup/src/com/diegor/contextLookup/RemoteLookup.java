@@ -19,6 +19,8 @@ package com.diegor.contextLookup;
 
 import java.util.Enumeration;
 import javax.microedition.pim.PIM;
+
+import net.rim.blackberry.api.browser.Browser;
 import net.rim.blackberry.api.pdap.BlackBerryContactList;
 import net.rim.blackberry.api.pdap.RemoteLookupListener;
 
@@ -50,5 +52,8 @@ final public class RemoteLookup {
 		);
 	}
 	
-
+	public void doLinkedInLookup(String contact){
+		Browser.getDefaultSession().displayPage("http://m.linkedin.com/members?search_term="+contact+"&filter=keywords&commit=Search");
+	}
+	
 }

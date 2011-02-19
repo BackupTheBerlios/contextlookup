@@ -72,6 +72,14 @@ final class ChooseContactScreen extends MainScreen implements ObserverInterface 
 			onClose();
 		}
 	};
+	private MenuItem lookupItemLinkedIn = new MenuItem("Lookup Contact on LinkedIn", 100, 10) {
+		// this is the main action. It should appear close to Show Address and Add Contact
+		public void run() {
+			RemoteLookup lookup_email = new RemoteLookup();
+			lookup_email.doLinkedInLookup(user_input.getText());
+			onClose();
+		}
+	};
 	private MenuItem closeItem = new MenuItem("Close", 200000, 10) {
 		// implementing as per UI guidelines
 		public void run() {
@@ -81,6 +89,7 @@ final class ChooseContactScreen extends MainScreen implements ObserverInterface 
 	protected void makeMenu(Menu menu, int instance) {
 		//it is called by the OS to create app menu
 		menu.add(lookupItem);
+		menu.add(lookupItemLinkedIn);
 		menu.add(closeItem);
 	}
 
