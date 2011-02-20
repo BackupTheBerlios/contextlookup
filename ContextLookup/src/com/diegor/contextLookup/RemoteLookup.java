@@ -55,5 +55,8 @@ final public class RemoteLookup {
 	public void doLinkedInLookup(String contact){
 		Browser.getDefaultSession().displayPage("http://m.linkedin.com/members?search_term="+contact+"&filter=keywords&commit=Search");
 	}
-	
+
+	public void do123peopleLookup(String contact){
+		Browser.getDefaultSession().displayPage("http://m.123people.com/s/"+contact+"/");
+	}
 }
