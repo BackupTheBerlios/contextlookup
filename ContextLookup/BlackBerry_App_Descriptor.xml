@@ -1,5 +1,5 @@
 <Properties ModelVersion="1.1.2">
-  <General Title="Context Lookup" Version="0.3.1" Vendor="Egor Kobylkin" Description="Lookup contact in the remote Address Book, LinkedIn or 123people directly from the Email/MMS/PIN view. Copyright 2011 Egor Kobylkin. Licensed under GNU General Public License (GPL)."/>
+  <General Title="Context Lookup" Version="0.4.0" Vendor="Egor Kobylkin" Description="Lookup contact in the remote Address Book, LinkedIn or 123people directly from the Email/MMS/PIN view. Copyright 2011 Egor Kobylkin. Licensed under GNU General Public License (GPL)."/>
   <Application Type="BlackBerry Application" MainMIDletName="" MainArgs="" HomeScreenPosition="0" StartupTier="7" IsSystemModule="true" IsAutostartup="true"/>
   <Resources hasTitleResource="false" TitleResourceBundleName="" TitleResourceBundleRelativePath="" TitleResourceBundleClassName="" TitleResourceBundleKey="" DescriptionId="">
     <Icons>
