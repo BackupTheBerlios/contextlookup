@@ -32,6 +32,7 @@ import net.rim.device.api.ui.component.Menu;
 import net.rim.device.api.ui.component.ObjectChoiceField;
 import net.rim.device.api.ui.component.RichTextField;
 import net.rim.device.api.ui.component.SeparatorField;
+import net.rim.device.api.ui.container.HorizontalFieldManager;
 import net.rim.device.api.ui.container.MainScreen;
 
 final class ChooseContactScreen extends MainScreen implements
@@ -39,7 +40,8 @@ final class ChooseContactScreen extends MainScreen implements
 	// This screen should be displayed after the menu item "Lookup Contact" is
 	// selected. It is the only visible screen of this app. I would like to
 	// rewrite it so that it looks like the BB Addressbook.
-	private ButtonField user_input;
+	private ButtonField lookupButton;
+	private String lookupString = "Choose A Contact Below First";
 	// to be able to use the "for" cycle
 	int[] recipientTypeIterator = { // TODO change to final
 	Message.RecipientType.FROM, Message.RecipientType.TO,
@@ -51,16 +53,18 @@ final class ChooseContactScreen extends MainScreen implements
 
 	public ChooseContactScreen() {
 		super();
+		this.setTitle("Context lookup extention");
 	}
 
 	// methods for custom context menu
-	private MenuItem lookupItem = new MenuItem("Lookup Contact", 100, 10) {
+	private MenuItem lookupItem = new MenuItem("Lookup Contact on BB Server",
+			100, 10) {
 		// this is the main action.
 		// It should appear close to Show Address and Add Contact
 		public void run() {
 			RemoteLookup lookup_email = new RemoteLookup();
 			Invoke.invokeApplication(Invoke.APP_TYPE_ADDRESSBOOK, null);
-			lookup_email.doLookup(user_input.getLabel());
+			lookup_email.doLookup(lookupString);
 			onClose();
 		}
 	};
@@ -68,7 +72,7 @@ final class ChooseContactScreen extends MainScreen implements
 			"Lookup Contact on LinkedIn", 100, 10) {
 		public void run() {
 			RemoteLookup lookup_email = new RemoteLookup();
-			lookup_email.doLinkedInLookup(user_input.getLabel());
+			lookup_email.doLinkedInLookup(lookupString);
 			onClose();
 		}
 	};
@@ -76,7 +80,7 @@ final class ChooseContactScreen extends MainScreen implements
 			"Lookup Contact on 123people", 100, 10) {
 		public void run() {
 			RemoteLookup lookup_email = new RemoteLookup();
-			lookup_email.do123peopleLookup( user_input.getLabel());
+			lookup_email.do123peopleLookup(lookupString);
 			onClose();
 		}
 
@@ -103,17 +107,12 @@ final class ChooseContactScreen extends MainScreen implements
 		// available so we use it as a default
 		try {
 			from_address = message.getFrom().getName();
-			from_address =(from_address instanceof String)?from_address:message.getFrom().getAddr();
+			lookupString = (from_address instanceof String) ? from_address
+					: message.getFrom().getAddr();
 		} catch (Exception ex) {
-			from_address = "Choose A Contact Below";
 		}
-		user_input = new ButtonField( from_address);
-		LabelField lfl=new LabelField( "Lookup:");
-		JustifiedHorizontalFieldManager hml = new JustifiedHorizontalFieldManager(
-				lfl, user_input, true);
-		// Had to create a custom Field Manager as the vanilla one
-		// does not support justified layout.
-		this.add(hml);
+		lookupButton = new ButtonField("Lookup: "+lookupString, ButtonField.USE_ALL_WIDTH|ButtonField.FIELD_HCENTER|ButtonField.HCENTER);
+		this.add(lookupButton);
 		SeparatorField sf = new SeparatorField(SeparatorField.LINE_HORIZONTAL);
 		this.add(sf);
 
@@ -150,7 +149,7 @@ final class ChooseContactScreen extends MainScreen implements
 
 		// From here on we start adding fields filled with the collected
 		// information.
-		add(new RichTextField("Choose Another Contact To Look Up:"));
+		add(new RichTextField("Choose Different Contact To Look Up:"));
 
 		for (int rt = 0; rt < recipientTypeListLength; rt++) {
 			if (addressList[rt] instanceof String[]) { // email not null
@@ -174,10 +173,26 @@ final class ChooseContactScreen extends MainScreen implements
 			}
 			;
 		}
+
 		SeparatorField sf2 = new SeparatorField(SeparatorField.LINE_HORIZONTAL);
 		this.add(sf2);
-/*		ButtonField feedback = new ButtonField("Feedback and License",
-				ButtonField.CONSUME_CLICK | ButtonField.FIELD_HCENTER
+
+		// TODO change ButtonField to HyperlinkButtonFieldlj
+		ButtonField license = new ButtonField("License GPL3"
+		// , 0x0000FF, 0xFFFFFF, 0x0000FF, 0, 0,
+				, ButtonField.CONSUME_CLICK | ButtonField.FIELD_LEFT
+						| ButtonField.HCENTER);
+		license.setChangeListener(new FieldChangeListener() {
+			public void fieldChanged(Field field, int context) {
+				if (field instanceof ButtonField) {
+					Browser.getDefaultSession().displayPage(
+							"http://www.gnu.org/licenses/gpl.html");
+				}
+			}
+		});
+
+		ButtonField feedback = new ButtonField("Feedback",
+				ButtonField.CONSUME_CLICK | ButtonField.FIELD_LEFT
 						| ButtonField.HCENTER);
 		feedback.setChangeListener(new FieldChangeListener() {
 			public void fieldChanged(Field field, int context) {
@@ -185,13 +200,16 @@ final class ChooseContactScreen extends MainScreen implements
 					Browser
 							.getDefaultSession()
 							.displayPage(
-									"http://developer.berlios.de/forum/forum.php?forum_id=36545");
+									"http://contextlookup.blogspot.com/2011/02/contextlookup-041-is-out.html#comments");
 				}
 			}
 		});
-		this.add(feedback);*/
-		add(new RichTextField("Copyright 2011 Egor Kobylkin, GPL3"));
-		
+		HorizontalFieldManager hm = new HorizontalFieldManager();
+		hm.add(feedback);
+		hm.add(license);
+		this.add(new RichTextField("Copyright 2011 Egor Kobylkin"));
+		this.add(hm);
+
 		UiApplication.getUiApplication().pushScreen(this);
 	}
 
@@ -205,18 +223,20 @@ final class ChooseContactScreen extends MainScreen implements
 		// rewrites user_input with the email from a drop down list
 		if (field instanceof ObjectChoiceField) {
 			// assumption: all dropdown lists contain email addresses or
-			// contacts
+			// contacts.
 			try {
-				user_input.setLabel((String) ((ObjectChoiceField) field)
+				lookupString = (String) ((ObjectChoiceField) field)
 						.getChoice(((ObjectChoiceField) field)
-								.getSelectedIndex()));
+								.getSelectedIndex());
+				lookupButton.setLabel("Lookup: " + lookupString);
 			} catch (Exception ex) {
 				System.out.print(ex.toString());
 			}
 		} else if (field instanceof ButtonField) {
 			try {
 				ButtonField buttonField = (ButtonField) field;
-				user_input.setLabel(buttonField.getLabel());
+				lookupString = buttonField.getLabel();
+				lookupButton.setLabel("Lookup: " + lookupString);
 			} catch (Exception ex) {
 				System.out.print(ex.toString());
 			}

@@ -14,7 +14,7 @@
 
     You should have received a copy of the GNU General Public License
     along with ContextLookup.  If not, see <http://www.gnu.org/licenses/>.
-*/
+ */
 package com.diegor.contextLookup;
 
 import java.util.Enumeration;
@@ -25,38 +25,43 @@ import net.rim.blackberry.api.pdap.BlackBerryContactList;
 import net.rim.blackberry.api.pdap.RemoteLookupListener;
 
 final public class RemoteLookup {
-	
+
 	private BlackBerryContactList contactList;
-	
+
 	public RemoteLookup() {
 		try {
 			PIM pim = PIM.getInstance();
-			//open the contact list for read/write permissions
-			 contactList = (BlackBerryContactList)pim.openPIMList(PIM.CONTACT_LIST	,PIM.READ_WRITE);
+			// open the contact list for read/write permissions
+			contactList = (BlackBerryContactList) pim.openPIMList(
+					PIM.CONTACT_LIST, PIM.READ_WRITE);
 		} catch (Exception ex) {
 			System.out.println(ex.toString());
-		}		
-	}
-	
-	public void doLookup(String contact){
-		contactList.lookup(contact, 
-				new RemoteLookupListener(){
-						public void items(Enumeration results){
-							// the lookup itself lands in the address book, so I push its screen up.
-//						Dialog.alert("Lookup Request completed"); 
-	/*					while (results.hasMoreElements()){
-							//TODO not sure what would make sense to to with the results. It seems ending in the addressbook screen is good enough.
-						}	*/
-						}
-				}
-		);
-	}
-	
-	public void doLinkedInLookup(String contact){
-		Browser.getDefaultSession().displayPage("http://m.linkedin.com/members?search_term="+contact+"&filter=keywords&commit=Search");
+		}
 	}
 
-	public void do123peopleLookup(String contact){
-		Browser.getDefaultSession().displayPage("http://m.123people.com/s/"+contact+"/");
+	public void doLookup(String contact) {
+		contactList.lookup(contact, new RemoteLookupListener() {
+			public void items(Enumeration results) {
+				 // while (results.hasMoreElements()){  }
+				// TODO not sure what would make sense to to with the results.
+				// It seems ending in the addressbook screen is good enough.
+			}
+		});
 	}
+
+	public void doLinkedInLookup(String contact) {
+		Browser.getDefaultSession().displayPage(
+				"http://m.linkedin.com/members?search_term=" + contact
+						+ "&filter=keywords&commit=Search");
+	}
+
+	public void do123peopleLookup(String contact) {
+		Browser.getDefaultSession().displayPage(
+				"http://m.123people.com/s/" + contact + "/");
+	}
+
+	public void doFacebookLookup(String contact) {
+		// TODO this is a stub
+	}
+
 }
