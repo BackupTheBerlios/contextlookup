@@ -61,7 +61,7 @@ final public class RemoteLookup {
 	}
 
 	public void doFacebookLookup(String contact) {
-		// TODO this is a stub
+		Browser.getDefaultSession().displayPage("cod://ContextLookup/doFacebookLookup.html");
 	}
 
 }
