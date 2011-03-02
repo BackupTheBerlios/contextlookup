@@ -150,6 +150,8 @@ final class ChooseContactScreen extends MainScreen implements ObserverInterface 
 			}
 		}
 
+		Arrays.sort(contacts1dimArray, new StringComparator());
+		
 		contactsOLF.set(contacts1dimArray);
 
 		RichTextField emptyLine = new RichTextField("", Field.NON_FOCUSABLE);
