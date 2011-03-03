@@ -20,6 +20,7 @@ package com.diegor.contextLookup;
 
 import net.rim.blackberry.api.browser.Browser;
 import net.rim.blackberry.api.invoke.Invoke;
+import net.rim.blackberry.api.mail.Address;
 import net.rim.blackberry.api.mail.Message;
 import net.rim.blackberry.api.mail.MessagingException;
 import net.rim.device.api.ui.Field;
@@ -40,13 +41,13 @@ final class ChooseContactScreen extends MainScreen implements ObserverInterface 
 
 	private String lookupString = "Error in ContextLookup! Choose a contact first!";
 	// some help to be able to use the "for" cycle for message fields extraction
-	int[] recipientTypeIterator = { // TODO change to final
-	Message.RecipientType.FROM, Message.RecipientType.TO,
-			Message.RecipientType.CC, Message.RecipientType.BCC,
-			Message.RecipientType.REPLY_TO, Message.RecipientType.SENDER, };
-	int recipientTypeListLength = recipientTypeIterator.length;
-	String[] fieldNameIterator = { // TODO change to final
-	"From:", "To:", "CC:", "BCC:", "Reply_To:", "Sender:", };
+	final int[] recipientTypeIterator = { Message.RecipientType.FROM,
+			Message.RecipientType.TO, Message.RecipientType.CC,
+			Message.RecipientType.BCC, Message.RecipientType.REPLY_TO,
+			Message.RecipientType.SENDER, };
+	final int recipientTypeListLength = recipientTypeIterator.length;
+	String[] fieldNameIterator = { "From:", "To:", "CC:", "BCC:", "Reply_To:",
+			"Sender:", };
 	final ObjectListField contactsOLF = new ObjectListField();
 
 	public ChooseContactScreen() {
@@ -55,7 +56,7 @@ final class ChooseContactScreen extends MainScreen implements ObserverInterface 
 	}
 
 	// methods for custom context menu
-	private MenuItem lookupItemBBServer = new MenuItem(
+	final private MenuItem lookupItemBBServer = new MenuItem(
 			"Lookup Contact on BB Server", 100, 10) {
 		// this is the main action.
 		// It should appear close to Show Address and Add Contact
@@ -68,7 +69,7 @@ final class ChooseContactScreen extends MainScreen implements ObserverInterface 
 			onClose();
 		}
 	};
-	private MenuItem lookupItemLinkedIn = new MenuItem(
+	final private MenuItem lookupItemLinkedIn = new MenuItem(
 			"Lookup Contact on LinkedIn", 100, 10) {
 		public void run() {
 			RemoteLookup rl = new RemoteLookup();
@@ -78,7 +79,7 @@ final class ChooseContactScreen extends MainScreen implements ObserverInterface 
 			onClose();
 		}
 	};
-	private MenuItem lookupItem123people = new MenuItem(
+	final private MenuItem lookupItem123people = new MenuItem(
 			"Lookup Contact on 123people", 100, 10) {
 		public void run() {
 			RemoteLookup rl = new RemoteLookup();
@@ -89,7 +90,7 @@ final class ChooseContactScreen extends MainScreen implements ObserverInterface 
 		}
 	};
 	// TODO write the doFacebookLookup
-	private MenuItem lookupItemFacebook = new MenuItem(
+	final private MenuItem lookupItemFacebook = new MenuItem(
 			"Lookup Contact on Facebook", 100, 10) {
 		public void run() {
 			RemoteLookup rl = new RemoteLookup();
@@ -100,14 +101,15 @@ final class ChooseContactScreen extends MainScreen implements ObserverInterface 
 		}
 	};
 
-	private MenuItem closeItem = new MenuItem("Close", 200000, 10) {
+	final private MenuItem closeItem = new MenuItem("Close", 200000, 10) {
 		// implementing as per UI guidelines
 		public void run() {
 			onClose();
 		}
 	};
 
-	protected void makeMenu(Menu menu, int instance) {
+	// TODO add Xing lookup
+	final protected void makeMenu(Menu menu, int instance) {
 		// it is called by the OS to create app menu
 		menu.add(lookupItemBBServer);
 		menu.add(lookupItemLinkedIn);
@@ -116,48 +118,38 @@ final class ChooseContactScreen extends MainScreen implements ObserverInterface 
 		menu.add(closeItem);
 	}
 
-	public void update(final net.rim.blackberry.api.mail.Message message) {
-
+	final public void update(final net.rim.blackberry.api.mail.Message message) {
 		// First we collect all Addresses and Names from the message.
-		String[/* field_type */][/* members */] addressList = new String[recipientTypeListLength][/* different_for_al_fields */];
 		String[] contacts1dimArray = new String[0];
-		for (int i = 0; i < recipientTypeListLength; i++) {
+		for (int i = recipientTypeListLength - 1; i >= 0; --i) {
 			// this iteration style should speed up a little
 			try {
-				int numberOfRecipients = message
-						.getRecipients(recipientTypeIterator[i]).length;
+				Address[] currentAddress = message
+						.getRecipients(recipientTypeIterator[i]);
+				int numberOfRecipients = currentAddress.length;
 				if (numberOfRecipients > 0) {
-					addressList[i] = new String[numberOfRecipients];
-					for (int j = 0; j < numberOfRecipients; j++) {
-						addressList[i][j] = message
-								.getRecipients(recipientTypeIterator[i])[j]
-								.getName();
-						addressList[i][j] = (addressList[i][j] instanceof String) ? addressList[i][j]
-								: message
-										.getRecipients(recipientTypeIterator[i])[j]
-										.getAddr();
-						Arrays.add(contacts1dimArray, addressList[i][j]);
+					for (int j = numberOfRecipients - 1; j >= 0; --j) {
+						String name = currentAddress[j].getName();
+						Arrays.add(contacts1dimArray,
+								(name instanceof String) ? name // not null
+										: currentAddress[j].getAddr());
 					}
 				}
 			} catch (MessagingException e) {
-				// if the above functionality to be placed in an own method,
-				// here we should just return a null instead
-				this
-						.add(new RichTextField(
-								"ERROR:Problem processing address fields from the message!"));
-				UiApplication.getUiApplication().pushScreen(this);
+				contacts1dimArray[0] = "Error retrieving message contacts!";
 				return;
 			}
 		}
 
 		Arrays.sort(contacts1dimArray, new StringComparator());
-		
+
 		contactsOLF.set(contacts1dimArray);
 
-		RichTextField emptyLine = new RichTextField("", Field.NON_FOCUSABLE);
+		final RichTextField emptyLine = new RichTextField("",
+				Field.NON_FOCUSABLE);
 
-		// make it clickable to look up for the copyrights owner
-		RichTextField copyright = new RichTextField(
+		// TODO make it clickable to look up for the copyrights owner
+		final RichTextField copyright = new RichTextField(
 				"Copyright 2011 Egor Kobylkin", Field.NON_FOCUSABLE);
 
 		// TODO change ButtonField to HyperlinkButtonField
@@ -174,7 +166,7 @@ final class ChooseContactScreen extends MainScreen implements ObserverInterface 
 			}
 		});
 
-		final ButtonField feedback = new ButtonField("Feedback",
+		final ButtonField feedback = new ButtonField("Your Feedback",
 				ButtonField.CONSUME_CLICK | ButtonField.FIELD_LEFT
 						| ButtonField.HCENTER);
 		feedback.setChangeListener(new FieldChangeListener() {
@@ -188,7 +180,7 @@ final class ChooseContactScreen extends MainScreen implements ObserverInterface 
 			}
 		});
 
-		HorizontalFieldManager hm = new HorizontalFieldManager();
+		final HorizontalFieldManager hm = new HorizontalFieldManager();
 
 		this.add(contactsOLF);
 		this.add(emptyLine);
@@ -200,7 +192,7 @@ final class ChooseContactScreen extends MainScreen implements ObserverInterface 
 		UiApplication.getUiApplication().pushScreen(this);
 	}
 
-	public boolean onClose() {
+	final public boolean onClose() {
 		UiApplication.getUiApplication().popScreen(this);
 		this.deleteAll();
 		return true;
