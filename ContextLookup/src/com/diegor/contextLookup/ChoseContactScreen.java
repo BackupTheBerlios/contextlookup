@@ -23,6 +23,7 @@ import net.rim.blackberry.api.invoke.Invoke;
 import net.rim.blackberry.api.mail.Address;
 import net.rim.blackberry.api.mail.Message;
 import net.rim.blackberry.api.mail.MessagingException;
+import net.rim.device.api.system.Clipboard;
 import net.rim.device.api.ui.Field;
 import net.rim.device.api.ui.FieldChangeListener;
 import net.rim.device.api.ui.MenuItem;
@@ -34,6 +35,7 @@ import net.rim.device.api.ui.component.RichTextField;
 import net.rim.device.api.ui.container.HorizontalFieldManager;
 import net.rim.device.api.ui.container.MainScreen;
 import net.rim.device.api.util.Arrays;
+import net.rim.device.api.util.StringComparator;
 
 final class ChooseContactScreen extends MainScreen implements ObserverInterface {
 	// This screen should be displayed after the menu item "Lookup Contact" is
@@ -118,9 +120,12 @@ final class ChooseContactScreen extends MainScreen implements ObserverInterface 
 		menu.add(closeItem);
 	}
 
+	// TODO rewrite this part with a Vector instead of Array
 	final public void update(final net.rim.blackberry.api.mail.Message message) {
-		// First we collect all Addresses and Names from the message.
-		String[] contacts1dimArray = new String[0];
+
+		String[] contacts = new String[0];
+		// now we collect all Addresses and Names from the message.
+		// TODO rewrite this part with a Vector instead of Array
 		for (int i = recipientTypeListLength - 1; i >= 0; --i) {
 			// this iteration style should speed up a little
 			try {
@@ -130,20 +135,31 @@ final class ChooseContactScreen extends MainScreen implements ObserverInterface 
 				if (numberOfRecipients > 0) {
 					for (int j = numberOfRecipients - 1; j >= 0; --j) {
 						String name = currentAddress[j].getName();
-						Arrays.add(contacts1dimArray,
-								(name instanceof String) ? name // not null
-										: currentAddress[j].getAddr());
+						Arrays.add(contacts, (name != null) ? name
+								: currentAddress[j].getAddr());
 					}
 				}
 			} catch (MessagingException e) {
-				contacts1dimArray[0] = "Error retrieving message contacts!";
+				Arrays.add(contacts, "Error extracting message contacts!");
 				return;
 			}
 		}
 
-		Arrays.sort(contacts1dimArray, new StringComparator());
+		Arrays.sort(contacts, StringComparator.getInstance(true));
+		// ignore case and leave first position intact for the clipboard content
 
-		contactsOLF.set(contacts1dimArray);
+		String from_clipboard = Clipboard.getClipboard().toString();
+		if (from_clipboard != null && from_clipboard.length() > 0) {
+			from_clipboard = (from_clipboard.length() <= 30) ? from_clipboard
+					: from_clipboard.substring(0, 30);
+			// 30 because 42 would not fit
+		} else {
+			from_clipboard = "[clipboard empty]";
+		}
+
+		Arrays.add(contacts, from_clipboard);
+
+		contactsOLF.set(contacts);
 
 		final RichTextField emptyLine = new RichTextField("",
 				Field.NON_FOCUSABLE);
@@ -175,7 +191,7 @@ final class ChooseContactScreen extends MainScreen implements ObserverInterface 
 					Browser
 							.getDefaultSession()
 							.displayPage(
-									"http://contextlookup.blogspot.com/2011/02/contextlookup-050-is-out.html#comments");
+									"http://contextlookup.blogspot.com");
 				}
 			}
 		});
