@@ -1,9 +1,9 @@
 <Properties ModelVersion="1.1.2">
-  <General Title="Context Lookup" Version="0.5.0" Vendor="Egor Kobylkin" Description="Lookup contact on the BB Enterprise Server, LinkedIn or 123people directly from the Email/MMS/PIN view. Copyright 2011 Egor Kobylkin. Licensed under GNU General Public License (GPL3)."/>
+  <General Title="Look Up Contact" Version="0.1.0" Vendor="Egor Kobylkin" Description="Lookup contact on the BlackBerry? Enterprise Server, LinkedIn or 123people directly from the Email/MMS/PIN view. Copyright 2011 Egor Kobylkin. Licensed under GNU General Public License (GPL3)."/>
   <Application Type="BlackBerry Application" MainMIDletName="" MainArgs="" HomeScreenPosition="0" StartupTier="7" IsSystemModule="true" IsAutostartup="true"/>
   <Resources hasTitleResource="false" TitleResourceBundleName="" TitleResourceBundleRelativePath="" TitleResourceBundleClassName="" TitleResourceBundleKey="" DescriptionId="">
     <Icons>
-      <Icon CanonicalFileName="res/ConextLookup.png" IsFocus="false"/>
+      <Icon CanonicalFileName="res/LookUpContact.png" IsFocus="false"/>
     </Icons>
   </Resources>
   <Compile OutputCompilerMessages="false" ConvertImages="false" CreateWarningForNoExportedRoutine="true" CompressResources="false" AliasList="">
