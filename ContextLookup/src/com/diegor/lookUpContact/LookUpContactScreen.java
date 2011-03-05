@@ -59,9 +59,12 @@ final class LookUpContactScreen extends MainScreen implements ObserverInterface 
 
 	// methods for custom context menu
 	final private MenuItem lookupItemBBServer = new MenuItem(
-			"Look Up on BlackBerry Server", 100, 10) {
-		// this is the main action.
-		// It should appear close to Show Address and Add Contact
+			"B\u0332lackBerry Server Lookup", 100, 10) {
+/* implement this method to capture the keyboard 
+ * protected boolean keyChar(char c,
+                          int status,
+                          int time)
+ */
 		public void run() {
 			RemoteLookup lookup_email = new RemoteLookup();
 			Invoke.invokeApplication(Invoke.APP_TYPE_ADDRESSBOOK, null);
@@ -72,7 +75,7 @@ final class LookUpContactScreen extends MainScreen implements ObserverInterface 
 		}
 	};
 	final private MenuItem lookupItemLinkedIn = new MenuItem(
-			"Look Up on LinkedIn.com", 100, 10) {
+			"L\u0332inkedIn.com Lookup", 100, 10) {
 		public void run() {
 			RemoteLookup rl = new RemoteLookup();
 			lookupString = (String) (contactsOLF.get(contactsOLF, contactsOLF
@@ -82,7 +85,7 @@ final class LookUpContactScreen extends MainScreen implements ObserverInterface 
 		}
 	};
 	final private MenuItem lookupItem123people = new MenuItem(
-			"Look Up on 123people.com", 100, 10) {
+			"w\u0332ww.123people.com Lookup", 100, 10) {
 		public void run() {
 			RemoteLookup rl = new RemoteLookup();
 			lookupString = (String) (contactsOLF.get(contactsOLF, contactsOLF
@@ -93,7 +96,7 @@ final class LookUpContactScreen extends MainScreen implements ObserverInterface 
 	};
 	// TODO write the doFacebookLookup
 	final private MenuItem lookupItemFacebook = new MenuItem(
-			"Look Up on Facebook", 100, 10) {
+			"F\u0332acebook Lookup", 100, 10) {
 		public void run() {
 			RemoteLookup rl = new RemoteLookup();
 			lookupString = (String) (contactsOLF.get(contactsOLF, contactsOLF
