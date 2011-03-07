@@ -18,17 +18,21 @@
 package com.diegor.lookUpContact;
 
 import java.util.Vector;
+
+import javax.wireless.messaging.MultipartMessage;
+import javax.wireless.messaging.TextMessage;
+
 import net.rim.blackberry.api.mail.Message;
 import net.rim.blackberry.api.menuitem.ApplicationMenuItem;
+import net.rim.blackberry.api.phone.phonelogs.PhoneLogs;
 
 final class LookUpContactMenuItem extends ApplicationMenuItem {
-	// add new menu item to the "view email" screen of Blackberry Email
-	private Message selectedMessage;
+	// adds new menu item to the "view email" screen of Blackberry Email
 	private Vector observers;
 
 	public LookUpContactMenuItem(int order) {
 		super(0x01010000);
-		// place it after "next unopened item" close to "view contact" 
+		// place it after "next unopened item" close to "view contact"
 		observers = new Vector();
 	}
 
@@ -41,16 +45,39 @@ final class LookUpContactMenuItem extends ApplicationMenuItem {
 	 * observers.removeElement(esls); }
 	 */
 	// Go through vector of observers and call update on them
-	public void notifyObservers() {
+	public void notifyObservers(Message emailMessage) {
 		for (int i = 0; i < observers.size(); i++) {
-			((LookUpContactScreen) observers.elementAt(i))
-					.update(selectedMessage);
+			((LookUpContactScreen) observers.elementAt(i)).update(emailMessage);
+		}
+	}
+
+	public void notifyObservers(TextMessage smsMessage) {
+		for (int i = 0; i < observers.size(); i++) {
+			((LookUpContactScreen) observers.elementAt(i)).update(smsMessage);
+		}
+	}
+
+	public void notifyObservers(PhoneLogs phoneLog) {
+		for (int i = 0; i < observers.size(); i++) {
+			((LookUpContactScreen) observers.elementAt(i)).update(phoneLog);
+		}
+	}
+
+	public void notifyObservers(MultipartMessage mmsMessage) {
+		for (int i = 0; i < observers.size(); i++) {
+			((LookUpContactScreen) observers.elementAt(i)).update(mmsMessage);
 		}
 	}
 
 	public Object run(Object context) {
-		selectedMessage = (Message) context;
-		notifyObservers();
+		if (context instanceof Message)
+			notifyObservers((Message) context);
+		else if (context instanceof TextMessage)
+			notifyObservers((TextMessage) context);
+		else if (context instanceof PhoneLogs)
+			notifyObservers((TextMessage) context);
+		else if (context instanceof MultipartMessage)
+			notifyObservers((TextMessage) context);
 		return context;
 	}
 

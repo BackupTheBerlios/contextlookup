@@ -28,12 +28,28 @@ final public class LookUpContact extends UiApplication {
 
 	public LookUpContact() {
 		LookUpContactMenuItem myMenuitem = new LookUpContactMenuItem(0);
+		// EMAIL_EDIT, SMS_VIEW don't work, MMS_... not tested yet
 		ApplicationMenuItemRepository.getInstance().addMenuItem(
 				ApplicationMenuItemRepository.MENUITEM_EMAIL_VIEW, myMenuitem);
 		ApplicationMenuItemRepository.getInstance().addMenuItem(
-				ApplicationMenuItemRepository.MENUITEM_MESSAGE_LIST, myMenuitem);
-		// MENUITEM_MESSAGE_LIST MENUITEM_ADDRESSBOOK_LIST
-		// MENUITEM_ADDRESSCARD_VIEW MENUITEM_MMS_VIEW MENUITEM_SMS_VIEW
+				ApplicationMenuItemRepository.MENUITEM_EMAIL_EDIT, myMenuitem);
+		ApplicationMenuItemRepository.getInstance().addMenuItem(
+				ApplicationMenuItemRepository.MENUITEM_SMS_EDIT, myMenuitem);
+		ApplicationMenuItemRepository.getInstance().addMenuItem(
+				ApplicationMenuItemRepository.MENUITEM_SMS_VIEW, myMenuitem);
+		ApplicationMenuItemRepository.getInstance().addMenuItem(
+				ApplicationMenuItemRepository.MENUITEM_MMS_VIEW, myMenuitem);
+		ApplicationMenuItemRepository.getInstance().addMenuItem(
+				ApplicationMenuItemRepository.MENUITEM_MMS_EDIT, myMenuitem);
+		ApplicationMenuItemRepository.getInstance()
+				.addMenuItem(
+						ApplicationMenuItemRepository.MENUITEM_MESSAGE_LIST,
+						myMenuitem);
+		ApplicationMenuItemRepository.getInstance().addMenuItem(
+				ApplicationMenuItemRepository.MENUITEM_PHONELOG_VIEW,
+				myMenuitem);
+		// MENUITEM_ADDRESSBOOK_LIST
+		// MENUITEM_ADDRESSCARD_VIEW
 		LookUpContactScreen ccs = new LookUpContactScreen();
 		myMenuitem.addObserver(ccs);
 	}

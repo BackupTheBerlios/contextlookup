@@ -23,6 +23,7 @@ import net.rim.blackberry.api.invoke.Invoke;
 import net.rim.blackberry.api.mail.Address;
 import net.rim.blackberry.api.mail.Message;
 import net.rim.blackberry.api.mail.MessagingException;
+import net.rim.blackberry.api.phone.phonelogs.*;
 import net.rim.device.api.system.Clipboard;
 import net.rim.device.api.ui.Field;
 import net.rim.device.api.ui.FieldChangeListener;
@@ -40,16 +41,15 @@ import net.rim.device.api.util.StringComparator;
 final class LookUpContactScreen extends MainScreen implements ObserverInterface {
 	// This screen should be displayed after the menu item "Lookup Contact" is
 	// selected. It is the only visible screen of this app.
-
 	private String lookupString = "Error in Look Up Contact! No contact was selected!";
 	// some help to be able to use the "for" cycle for message fields extraction
-	final int[] recipientTypeIterator = { Message.RecipientType.FROM,
+	final int[] emailRecipientTypeIterator = { Message.RecipientType.FROM,
 			Message.RecipientType.TO, Message.RecipientType.CC,
 			Message.RecipientType.BCC, Message.RecipientType.REPLY_TO,
 			Message.RecipientType.SENDER, };
-	final int recipientTypeListLength = recipientTypeIterator.length;
-	String[] fieldNameIterator = { "From:", "To:", "CC:", "BCC:", "Reply_To:",
-			"Sender:", };
+	final int emailRecipientTypeListLength = emailRecipientTypeIterator.length;
+	String[] emailFieldNameIterator = { "From", "To", "CC", "BCC", "Reply_To",
+			"Sender", };
 	final ObjectListField contactsOLF = new ObjectListField();
 
 	public LookUpContactScreen() {
@@ -59,12 +59,11 @@ final class LookUpContactScreen extends MainScreen implements ObserverInterface 
 
 	// methods for custom context menu
 	final private MenuItem lookupItemBBServer = new MenuItem(
-			"B\u0332lackBerry Server Lookup", 100, 10) {
-/* implement this method to capture the keyboard 
- * protected boolean keyChar(char c,
-                          int status,
-                          int time)
- */
+			"Look Up on BlackBerry Server", 100, 10) {
+		/*
+		 * implement this method to capture the keyboard protected boolean
+		 * keyChar(char c, int status, int time)
+		 */
 		public void run() {
 			RemoteLookup lookup_email = new RemoteLookup();
 			Invoke.invokeApplication(Invoke.APP_TYPE_ADDRESSBOOK, null);
@@ -75,7 +74,7 @@ final class LookUpContactScreen extends MainScreen implements ObserverInterface 
 		}
 	};
 	final private MenuItem lookupItemLinkedIn = new MenuItem(
-			"L\u0332inkedIn.com Lookup", 100, 10) {
+			"Look Up on LinkedIn.com", 100, 10) {
 		public void run() {
 			RemoteLookup rl = new RemoteLookup();
 			lookupString = (String) (contactsOLF.get(contactsOLF, contactsOLF
@@ -85,7 +84,7 @@ final class LookUpContactScreen extends MainScreen implements ObserverInterface 
 		}
 	};
 	final private MenuItem lookupItem123people = new MenuItem(
-			"w\u0332ww.123people.com Lookup", 100, 10) {
+			"Look Up on 123people.com", 100, 10) {
 		public void run() {
 			RemoteLookup rl = new RemoteLookup();
 			lookupString = (String) (contactsOLF.get(contactsOLF, contactsOLF
@@ -96,7 +95,7 @@ final class LookUpContactScreen extends MainScreen implements ObserverInterface 
 	};
 	// TODO write the doFacebookLookup
 	final private MenuItem lookupItemFacebook = new MenuItem(
-			"F\u0332acebook Lookup", 100, 10) {
+			"Look Up on Facebook", 100, 10) {
 		public void run() {
 			RemoteLookup rl = new RemoteLookup();
 			lookupString = (String) (contactsOLF.get(contactsOLF, contactsOLF
@@ -125,15 +124,14 @@ final class LookUpContactScreen extends MainScreen implements ObserverInterface 
 
 	// TODO rewrite this part with a Vector instead of Array
 	final public void update(final net.rim.blackberry.api.mail.Message message) {
-
 		String[] contacts = new String[0];
 		// now we collect all Addresses and Names from the message.
 		// TODO rewrite this part with a Vector instead of Array
-		for (int i = recipientTypeListLength - 1; i >= 0; --i) {
+		for (int i = emailRecipientTypeListLength - 1; i >= 0; --i) {
 			// this iteration style should speed up a little
 			try {
 				Address[] currentAddress = message
-						.getRecipients(recipientTypeIterator[i]);
+						.getRecipients(emailRecipientTypeIterator[i]);
 				int numberOfRecipients = currentAddress.length;
 				if (numberOfRecipients > 0) {
 					for (int j = numberOfRecipients - 1; j >= 0; --j) {
@@ -144,10 +142,73 @@ final class LookUpContactScreen extends MainScreen implements ObserverInterface 
 				}
 			} catch (MessagingException e) {
 				Arrays.add(contacts, "Error extracting message contacts!");
-				return;
 			}
 		}
+		makeScreen(contacts);
+	}
 
+	final public void update(
+			final javax.wireless.messaging.MultipartMessage message) {
+		String[] contacts = new String[0];
+		// now we collect all Addresses and Names from the message.
+		// TODO rewrite this part with a Vector instead of Array
+		for (int i = emailRecipientTypeListLength - 1; i >= 0; --i) {
+			String[] currentAddress = message
+					.getAddresses(emailFieldNameIterator[i]);
+			if (currentAddress != null) {
+				int numberOfRecipients = currentAddress.length;
+				for (int j = numberOfRecipients - 1; j >= 0; --j) {
+					Arrays.add(contacts, currentAddress[j]);
+				}
+			}
+		}
+		if (contacts.length == 0) {
+			contacts[0] = "Error extracting message contacts!";
+		}
+		makeScreen(contacts);
+	}
+
+	final public void update(final javax.wireless.messaging.TextMessage message) {
+		String[] contacts = new String[1];
+		String address = message.getAddress();
+		contacts[0] = (address != null) ? address
+				: "Unable to extract contact address";
+		makeScreen(contacts);
+	}
+
+	final public void update(
+			final net.rim.blackberry.api.phone.phonelogs.PhoneLogs phoneLog) {
+		String[] contacts = new String[1];
+		PhoneCallLogID participant;
+		CallLog callLogEntry = PhoneLogs.getInstance().callAt(
+				getFieldWithFocusIndex(), PhoneLogs.FOLDER_NORMAL_CALLS);
+		if (callLogEntry == null) { // any better way to get the entry for sure?
+			callLogEntry = PhoneLogs.getInstance().callAt(
+					getFieldWithFocusIndex(), PhoneLogs.FOLDER_MISSED_CALLS);
+		}
+		if (callLogEntry instanceof PhoneCallLog) {
+			participant = ((PhoneCallLog) callLogEntry).getParticipant();
+			String name = participant.getName();
+			contacts[0] = (name != null) ? name : participant.getNumber();
+		} else if (callLogEntry instanceof ConferencePhoneCallLog) {
+			ConferencePhoneCallLog cpcl = (ConferencePhoneCallLog) callLogEntry;
+			int numberOfParticipants = cpcl.numberOfParticipants();
+			if (numberOfParticipants > 0) {
+				for (int j = 0; j < numberOfParticipants; ++j) {
+					participant = cpcl.getParticipantAt(j);
+					String name = participant.getName();
+					Arrays.add(contacts, (name != null) ? name : participant
+							.getNumber());
+				}
+			}
+		} else {
+			contacts[0] = "Unable to extract contact name or phone";
+		}
+		makeScreen(contacts);
+		return;
+	}
+
+	final void makeScreen(String[] contacts) {
 		Arrays.sort(contacts, StringComparator.getInstance(true));
 		// ignore case and leave first position intact for the clipboard content
 
@@ -191,10 +252,8 @@ final class LookUpContactScreen extends MainScreen implements ObserverInterface 
 		feedback.setChangeListener(new FieldChangeListener() {
 			public void fieldChanged(Field field, int context) {
 				if (field instanceof ButtonField) {
-					Browser
-							.getDefaultSession()
-							.displayPage(
-									"http://contextlookup.blogspot.com");
+					Browser.getDefaultSession().displayPage(
+							"http://contextlookup.blogspot.com");
 				}
 			}
 		});
