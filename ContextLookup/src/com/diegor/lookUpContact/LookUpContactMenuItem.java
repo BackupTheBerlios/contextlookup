@@ -19,12 +19,14 @@ package com.diegor.lookUpContact;
 
 import java.util.Vector;
 
+import javax.microedition.pim.Contact;
 import javax.wireless.messaging.MultipartMessage;
 import javax.wireless.messaging.TextMessage;
 
 import net.rim.blackberry.api.mail.Message;
 import net.rim.blackberry.api.menuitem.ApplicationMenuItem;
-import net.rim.blackberry.api.phone.phonelogs.PhoneLogs;
+import net.rim.blackberry.api.phone.phonelogs.PhoneCallLog;
+import net.rim.device.api.ui.component.Dialog;
 
 final class LookUpContactMenuItem extends ApplicationMenuItem {
 	// adds new menu item to the "view email" screen of Blackberry Email
@@ -46,38 +48,49 @@ final class LookUpContactMenuItem extends ApplicationMenuItem {
 	 */
 	// Go through vector of observers and call update on them
 	public void notifyObservers(Message emailMessage) {
-		for (int i = 0; i < observers.size(); i++) {
+		for (int i = 0; i < observers.size(); ++i) {
 			((LookUpContactScreen) observers.elementAt(i)).update(emailMessage);
 		}
 	}
 
 	public void notifyObservers(TextMessage smsMessage) {
-		for (int i = 0; i < observers.size(); i++) {
+		for (int i = 0; i < observers.size(); ++i) {
 			((LookUpContactScreen) observers.elementAt(i)).update(smsMessage);
 		}
 	}
 
-	public void notifyObservers(PhoneLogs phoneLog) {
-		for (int i = 0; i < observers.size(); i++) {
+	public void notifyObservers(PhoneCallLog phoneLog) {
+		for (int i = 0; i < observers.size(); ++i) {
 			((LookUpContactScreen) observers.elementAt(i)).update(phoneLog);
 		}
 	}
 
 	public void notifyObservers(MultipartMessage mmsMessage) {
-		for (int i = 0; i < observers.size(); i++) {
+		for (int i = 0; i < observers.size(); ++i) {
 			((LookUpContactScreen) observers.elementAt(i)).update(mmsMessage);
 		}
 	}
 
+	public void notifyObservers(Contact contact) {
+		for (int i = 0; i < observers.size(); ++i) {
+			((LookUpContactScreen) observers.elementAt(i)).update(contact);
+		}
+	}
+
 	public Object run(Object context) {
-		if (context instanceof Message)
+		if (context instanceof Message) {
 			notifyObservers((Message) context);
-		else if (context instanceof TextMessage)
+		} else if (context instanceof TextMessage) {
 			notifyObservers((TextMessage) context);
-		else if (context instanceof PhoneLogs)
-			notifyObservers((TextMessage) context);
-		else if (context instanceof MultipartMessage)
-			notifyObservers((TextMessage) context);
+		} else if (context instanceof PhoneCallLog) {
+			notifyObservers((PhoneCallLog) context);
+		} else if (context instanceof MultipartMessage) {
+			notifyObservers((MultipartMessage) context);
+		} else if (context instanceof Contact) {
+			notifyObservers((Contact) context);
+		} else if (context != null) {
+			Dialog.alert("Debugging Info:" + context.toString());
+		}
 		return context;
 	}
 

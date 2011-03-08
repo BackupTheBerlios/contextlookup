@@ -1,5 +1,5 @@
 <Properties ModelVersion="1.1.2">
-  <General Title="Look Up Contact" Version="0.1.0" Vendor="Egor Kobylkin" Description="Lookup contact on the BlackBerry? Enterprise Server, LinkedIn or 123people directly from the Email/MMS/PIN view. Copyright 2011 Egor Kobylkin. Licensed under GNU General Public License (GPL3)."/>
+  <General Title="Look Up Contact" Version="0.2.2" Vendor="Egor Kobylkin" Description="Look up a contact on the BlackBerry(R) Enterprise Server, LinkedIn or 123people directly from the message. Copyright 2011 Egor Kobylkin. Licensed under GNU General Public License (GPL3)."/>
   <Application Type="BlackBerry Application" MainMIDletName="" MainArgs="" HomeScreenPosition="0" StartupTier="7" IsSystemModule="true" IsAutostartup="true"/>
   <Resources hasTitleResource="false" TitleResourceBundleName="" TitleResourceBundleRelativePath="" TitleResourceBundleClassName="" TitleResourceBundleKey="" DescriptionId="">
     <Icons>
@@ -9,7 +9,7 @@
   <Compile OutputCompilerMessages="false" ConvertImages="false" CreateWarningForNoExportedRoutine="true" CompressResources="false" AliasList="">
     <PreprocessorDefines/>
   </Compile>
-  <Packaging OutputFileName="ContextLookup" OutputFolder="deliverables" PreBuildStep="" PostBuildStep="" CleanStep="" GenerateALXFile="true">
+  <Packaging OutputFileName="LookUpContact" OutputFolder="deliverables" PreBuildStep="" PostBuildStep="" CleanStep="" GenerateALXFile="false">
     <AlxFiles/>
   </Packaging>
   <HiddenProperties>

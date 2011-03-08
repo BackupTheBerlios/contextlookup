@@ -17,9 +17,12 @@
  */
 package com.diegor.lookUpContact;
 
+
+
 public interface ObserverInterface {
 	public void update(net.rim.blackberry.api.mail.Message message); //email and PIN
 	public void update(javax.wireless.messaging.TextMessage message); //SMS
 	public void update(javax.wireless.messaging.MultipartMessage message); //MMS, does not work, bug in API 5.0 
-	public void update(net.rim.blackberry.api.phone.phonelogs.PhoneLogs phoneLog); //calls, does not work, bug in API 5.0
+	public void update(net.rim.blackberry.api.phone.phonelogs.PhoneCallLog phoneLog); //calls
+	public void update(javax.microedition.pim.Contact contact); //address book contact
 }

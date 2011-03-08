@@ -18,6 +18,8 @@
 
 package com.diegor.lookUpContact;
 
+import javax.microedition.pim.Contact;
+
 import net.rim.blackberry.api.browser.Browser;
 import net.rim.blackberry.api.invoke.Invoke;
 import net.rim.blackberry.api.mail.Address;
@@ -177,35 +179,69 @@ final class LookUpContactScreen extends MainScreen implements ObserverInterface 
 	}
 
 	final public void update(
-			final net.rim.blackberry.api.phone.phonelogs.PhoneLogs phoneLog) {
+			final net.rim.blackberry.api.phone.phonelogs.PhoneCallLog phoneLog) {
 		String[] contacts = new String[1];
-		PhoneCallLogID participant;
-		CallLog callLogEntry = PhoneLogs.getInstance().callAt(
-				getFieldWithFocusIndex(), PhoneLogs.FOLDER_NORMAL_CALLS);
-		if (callLogEntry == null) { // any better way to get the entry for sure?
-			callLogEntry = PhoneLogs.getInstance().callAt(
-					getFieldWithFocusIndex(), PhoneLogs.FOLDER_MISSED_CALLS);
-		}
-		if (callLogEntry instanceof PhoneCallLog) {
-			participant = ((PhoneCallLog) callLogEntry).getParticipant();
-			String name = participant.getName();
-			contacts[0] = (name != null) ? name : participant.getNumber();
-		} else if (callLogEntry instanceof ConferencePhoneCallLog) {
-			ConferencePhoneCallLog cpcl = (ConferencePhoneCallLog) callLogEntry;
-			int numberOfParticipants = cpcl.numberOfParticipants();
-			if (numberOfParticipants > 0) {
-				for (int j = 0; j < numberOfParticipants; ++j) {
-					participant = cpcl.getParticipantAt(j);
-					String name = participant.getName();
-					Arrays.add(contacts, (name != null) ? name : participant
-							.getNumber());
-				}
-			}
-		} else {
+		PhoneCallLogID participant = phoneLog.getParticipant();
+		String name = participant.getName();
+		contacts[0] = (name != null) ? name : participant.getNumber();
+		makeScreen(contacts);
+		return;
+	}
+
+	/*
+	 * for the conference calls } else if (callLogEntry instanceof
+	 * ConferencePhoneCallLog) { ConferencePhoneCallLog cpcl =
+	 * (ConferencePhoneCallLog) callLogEntry; int numberOfParticipants =
+	 * cpcl.numberOfParticipants(); if (numberOfParticipants > 0) { for (int j =
+	 * 0; j < numberOfParticipants; ++j) { participant =
+	 * cpcl.getParticipantAt(j); String name = participant.getName();
+	 * Arrays.add(contacts, (name != null) ? name : participant .getNumber()); }
+	 * } } else { contacts[0] = "Unable to extract contact name or phone"; }
+	 */
+
+	final public void update(final javax.microedition.pim.Contact contact) {
+		String[] contacts = new String[1];
+		// TODO write this code
+		contacts[0] = getDisplayName(contact);
+		if (contacts[0] == null) {
 			contacts[0] = "Unable to extract contact name or phone";
 		}
 		makeScreen(contacts);
-		return;
+	}
+
+	public static String getDisplayName(Contact contact) {
+		if (contact == null) {
+			return null;
+		}
+		String displayName = null;
+		// First, see if there is a meaningful name set for the contact.
+		if (contact.countValues(Contact.NAME) > 0) {
+			final String[] name = contact.getStringArray(Contact.NAME, 0);
+			final String firstName = name[Contact.NAME_GIVEN];
+			final String lastName = name[Contact.NAME_FAMILY];
+			if (firstName != null && lastName != null) {
+				displayName = firstName + " " + lastName;
+			} else if (firstName != null) {
+				displayName = firstName;
+			} else if (lastName != null) {
+				displayName = lastName;
+			}
+			if (displayName != null) {
+				final String namePrefix = name[Contact.NAME_PREFIX];
+				if (namePrefix != null) {
+					displayName = namePrefix + " " + displayName;
+				}
+				return displayName;
+			}
+		}
+		// If not, use the company name.
+		if (contact.countValues(Contact.ORG) > 0) {
+			final String companyName = contact.getString(Contact.ORG, 0);
+			if (companyName != null) {
+				return companyName;
+			}
+		}
+		return displayName;
 	}
 
 	final void makeScreen(String[] contacts) {
