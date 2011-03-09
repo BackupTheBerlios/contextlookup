@@ -210,6 +210,8 @@ final class LookUpContactScreen extends MainScreen implements ObserverInterface 
 	}
 
 	public static String getDisplayName(Contact contact) {
+	// http://supportforums.blackberry.com/t5/user/viewprofilepage/user-id/93709
+	// http://supportforums.blackberry.com/t5/Java-Development/PIM-gt-Contact-gt-Address-Fields/m-p/553324#M112593	
 		if (contact == null) {
 			return null;
 		}
