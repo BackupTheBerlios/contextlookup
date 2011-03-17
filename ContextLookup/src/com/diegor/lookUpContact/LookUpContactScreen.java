@@ -20,12 +20,15 @@ package com.diegor.lookUpContact;
 
 import javax.microedition.pim.Contact;
 
+import com.diego.lookUpContact.LookUpContactResource;
+
 import net.rim.blackberry.api.browser.Browser;
 import net.rim.blackberry.api.invoke.Invoke;
 import net.rim.blackberry.api.mail.Address;
 import net.rim.blackberry.api.mail.Message;
 import net.rim.blackberry.api.mail.MessagingException;
 import net.rim.blackberry.api.phone.phonelogs.*;
+import net.rim.device.api.i18n.ResourceBundle;
 import net.rim.device.api.system.Clipboard;
 import net.rim.device.api.ui.Field;
 import net.rim.device.api.ui.FieldChangeListener;
@@ -40,10 +43,12 @@ import net.rim.device.api.ui.container.MainScreen;
 import net.rim.device.api.util.Arrays;
 import net.rim.device.api.util.StringComparator;
 
-final class LookUpContactScreen extends MainScreen implements ObserverInterface {
+final class LookUpContactScreen extends MainScreen implements ObserverInterface, LookUpContactResource {
+	   // Create a ResourceBundle object to contain the localized resources.
+    private static ResourceBundle rb = ResourceBundle.getBundle(BUNDLE_ID,BUNDLE_NAME);
 	// This screen should be displayed after the menu item "Lookup Contact" is
 	// selected. It is the only visible screen of this app.
-	private String lookupString = "Error in Look Up Contact! No contact was selected!";
+	private String lookupString =rb.getString(I18N_ERROR_NO_CNTCT);
 	// some help to be able to use the "for" cycle for message fields extraction
 	final int[] emailRecipientTypeIterator = { Message.RecipientType.FROM,
 			Message.RecipientType.TO, Message.RecipientType.CC,
@@ -56,16 +61,12 @@ final class LookUpContactScreen extends MainScreen implements ObserverInterface 
 
 	public LookUpContactScreen() {
 		super();
-		this.setTitle("Look Up Contact");
+		this.setTitle(rb.getString(I18N_MAIN_SCREEN_TITLE));
 	}
 
 	// methods for custom context menu
 	final private MenuItem lookupItemBBServer = new MenuItem(
-			"Look Up on BlackBerry Server", 100, 10) {
-		/*
-		 * implement this method to capture the keyboard protected boolean
-		 * keyChar(char c, int status, int time)
-		 */
+			rb.getString(I18N_ACTION_NAME) +" "+"BlackBerry Server", 100, 10) {
 		public void run() {
 			RemoteLookup lookup_email = new RemoteLookup();
 			Invoke.invokeApplication(Invoke.APP_TYPE_ADDRESSBOOK, null);
@@ -76,7 +77,7 @@ final class LookUpContactScreen extends MainScreen implements ObserverInterface 
 		}
 	};
 	final private MenuItem lookupItemLinkedIn = new MenuItem(
-			"Look Up on LinkedIn.com", 100, 10) {
+			rb.getString(I18N_ACTION_NAME) +" "+"LinkedIn.com", 100, 10) {
 		public void run() {
 			RemoteLookup rl = new RemoteLookup();
 			lookupString = (String) (contactsOLF.get(contactsOLF, contactsOLF
@@ -86,7 +87,7 @@ final class LookUpContactScreen extends MainScreen implements ObserverInterface 
 		}
 	};
 	final private MenuItem lookupItem123people = new MenuItem(
-			"Look Up on 123people.com", 100, 10) {
+			rb.getString(I18N_ACTION_NAME) +" "+"123people.com", 100, 10) {
 		public void run() {
 			RemoteLookup rl = new RemoteLookup();
 			lookupString = (String) (contactsOLF.get(contactsOLF, contactsOLF
@@ -97,7 +98,7 @@ final class LookUpContactScreen extends MainScreen implements ObserverInterface 
 	};
 	// TODO write the doFacebookLookup
 	final private MenuItem lookupItemFacebook = new MenuItem(
-			"Look Up on Facebook", 100, 10) {
+			rb.getString(I18N_ACTION_NAME) +" "+"Facebook", 100, 10) {
 		public void run() {
 			RemoteLookup rl = new RemoteLookup();
 			lookupString = (String) (contactsOLF.get(contactsOLF, contactsOLF
@@ -107,7 +108,7 @@ final class LookUpContactScreen extends MainScreen implements ObserverInterface 
 		}
 	};
 
-	final private MenuItem closeItem = new MenuItem("Close", 200000, 10) {
+	final private MenuItem closeItem = new MenuItem(rb.getString(I18N_MENU_CLOSE), 200000, 10) {
 		// implementing as per UI guidelines
 		public void run() {
 			onClose();
@@ -143,7 +144,7 @@ final class LookUpContactScreen extends MainScreen implements ObserverInterface 
 					}
 				}
 			} catch (MessagingException e) {
-				Arrays.add(contacts, "Error extracting message contacts!");
+				Arrays.add(contacts, rb.getString(I18N_ERROR_CANT_EXTRCT_CNTCT));
 			}
 		}
 		makeScreen(contacts);
@@ -165,7 +166,7 @@ final class LookUpContactScreen extends MainScreen implements ObserverInterface 
 			}
 		}
 		if (contacts.length == 0) {
-			contacts[0] = "Error extracting message contacts!";
+			contacts[0] =  rb.getString(I18N_ERROR_CANT_EXTRCT_CNTCT);
 		}
 		makeScreen(contacts);
 	}
@@ -174,7 +175,7 @@ final class LookUpContactScreen extends MainScreen implements ObserverInterface 
 		String[] contacts = new String[1];
 		String address = message.getAddress();
 		contacts[0] = (address != null) ? address
-				: "Unable to extract contact address";
+				:  rb.getString(I18N_ERROR_CANT_EXTRCT_CNTCT);
 		makeScreen(contacts);
 	}
 
@@ -204,7 +205,7 @@ final class LookUpContactScreen extends MainScreen implements ObserverInterface 
 		// TODO write this code
 		contacts[0] = getDisplayName(contact);
 		if (contacts[0] == null) {
-			contacts[0] = "Unable to extract contact name or phone";
+			contacts[0] =  rb.getString(I18N_ERROR_CANT_EXTRCT_CNTCT);
 		}
 		makeScreen(contacts);
 	}
@@ -256,7 +257,7 @@ final class LookUpContactScreen extends MainScreen implements ObserverInterface 
 					: from_clipboard.substring(0, 30);
 			// 30 because 42 would not fit
 		} else {
-			from_clipboard = "[clipboard empty]";
+			from_clipboard =  rb.getString(I18N_CLPBRD_EMPTY);
 		}
 
 		Arrays.add(contacts, from_clipboard);
@@ -284,7 +285,7 @@ final class LookUpContactScreen extends MainScreen implements ObserverInterface 
 			}
 		});
 
-		final ButtonField feedback = new ButtonField("Your Feedback",
+		final ButtonField feedback = new ButtonField(rb.getString(I18N_FEEDBACK_BTTN),
 				ButtonField.CONSUME_CLICK | ButtonField.FIELD_LEFT
 						| ButtonField.HCENTER);
 		feedback.setChangeListener(new FieldChangeListener() {

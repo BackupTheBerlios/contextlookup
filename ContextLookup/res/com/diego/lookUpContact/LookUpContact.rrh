@@ -1,0 +1,13 @@
+package com.diego.lookUpContact;
+
+/**
+ * This appears in native BB aps menues and shows the main Look Up Contact screen
+ */
+I18N_MAIN_MENU_ITEM#0=0;
+I18N_ERROR_NO_CNTCT#0=1;
+I18N_MAIN_SCREEN_TITLE#0=2;
+I18N_ERROR_CANT_EXTRCT_CNTCT#0=3;
+I18N_CLPBRD_EMPTY#0=4;
+I18N_ACTION_NAME#0=5;
+I18N_MENU_CLOSE#0=6;
+I18N_FEEDBACK_BTTN#0=7;

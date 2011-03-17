@@ -19,7 +19,6 @@ package com.diegor.lookUpContact;
 
 import java.util.Enumeration;
 import javax.microedition.pim.PIM;
-
 import net.rim.blackberry.api.browser.Browser;
 import net.rim.blackberry.api.pdap.BlackBerryContactList;
 import net.rim.blackberry.api.pdap.RemoteLookupListener;

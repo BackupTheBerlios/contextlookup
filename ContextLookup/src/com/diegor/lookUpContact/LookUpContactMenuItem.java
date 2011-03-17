@@ -23,12 +23,19 @@ import javax.microedition.pim.Contact;
 import javax.wireless.messaging.MultipartMessage;
 import javax.wireless.messaging.TextMessage;
 
+import com.diego.lookUpContact.LookUpContactResource;
+
 import net.rim.blackberry.api.mail.Message;
 import net.rim.blackberry.api.menuitem.ApplicationMenuItem;
 import net.rim.blackberry.api.phone.phonelogs.PhoneCallLog;
+import net.rim.device.api.i18n.ResourceBundle;
 import net.rim.device.api.ui.component.Dialog;
 
-final class LookUpContactMenuItem extends ApplicationMenuItem {
+final class LookUpContactMenuItem extends ApplicationMenuItem implements LookUpContactResource {
+	
+	   // Create a ResourceBundle object to contain the localized resources.
+    private static ResourceBundle rb = ResourceBundle.getBundle(BUNDLE_ID,BUNDLE_NAME);
+
 	// adds new menu item to the "view email" screen of Blackberry Email
 	private Vector observers;
 
@@ -97,6 +104,6 @@ final class LookUpContactMenuItem extends ApplicationMenuItem {
 	public String toString() {
 		// toString should return the string we want to use as the label of the
 		// menuItem
-		return "Look Up Contact";
+		return rb.getString(I18N_MAIN_MENU_ITEM);
 	}
 }
