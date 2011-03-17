@@ -45,8 +45,8 @@ final class LookUpContactMenuItem extends ApplicationMenuItem implements LookUpC
 		observers = new Vector();
 	}
 
-	public void addObserver(LookUpContactScreen esls) {
-		observers.addElement(esls);
+	public void addObserver(DataExtractor ccs) {
+		observers.addElement(ccs);
 	}
 
 	/*
@@ -56,31 +56,31 @@ final class LookUpContactMenuItem extends ApplicationMenuItem implements LookUpC
 	// Go through vector of observers and call update on them
 	public void notifyObservers(Message emailMessage) {
 		for (int i = 0; i < observers.size(); ++i) {
-			((LookUpContactScreen) observers.elementAt(i)).update(emailMessage);
+			((DataExtractor) observers.elementAt(i)).update(emailMessage);
 		}
 	}
 
 	public void notifyObservers(TextMessage smsMessage) {
 		for (int i = 0; i < observers.size(); ++i) {
-			((LookUpContactScreen) observers.elementAt(i)).update(smsMessage);
+			((DataExtractor) observers.elementAt(i)).update(smsMessage);
 		}
 	}
 
 	public void notifyObservers(PhoneCallLog phoneLog) {
 		for (int i = 0; i < observers.size(); ++i) {
-			((LookUpContactScreen) observers.elementAt(i)).update(phoneLog);
+			((DataExtractor) observers.elementAt(i)).update(phoneLog);
 		}
 	}
 
 	public void notifyObservers(MultipartMessage mmsMessage) {
 		for (int i = 0; i < observers.size(); ++i) {
-			((LookUpContactScreen) observers.elementAt(i)).update(mmsMessage);
+			((DataExtractor) observers.elementAt(i)).update(mmsMessage);
 		}
 	}
 
 	public void notifyObservers(Contact contact) {
 		for (int i = 0; i < observers.size(); ++i) {
-			((LookUpContactScreen) observers.elementAt(i)).update(contact);
+			((DataExtractor) observers.elementAt(i)).update(contact);
 		}
 	}
 

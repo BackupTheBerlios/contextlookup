@@ -54,7 +54,7 @@ final public class LookUpContact extends UiApplication {
 		ApplicationMenuItemRepository.getInstance().addMenuItem(
 				ApplicationMenuItemRepository.MENUITEM_ADDRESSCARD_VIEW,
 				myMenuitem);
-		LookUpContactScreen ccs = new LookUpContactScreen();
-		myMenuitem.addObserver(ccs);
+		DataExtractor de = new DataExtractor();
+		myMenuitem.addObserver(de);
 	}
 }
